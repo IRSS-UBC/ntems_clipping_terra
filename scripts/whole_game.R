@@ -36,7 +36,7 @@ vars <-
     
     change_attribution = F,
     change_metrics = F,
-    change_annual = T,
+    change_annual = F,
     
     species = F,
     

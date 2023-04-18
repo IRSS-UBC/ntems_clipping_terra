@@ -72,6 +72,12 @@ species_df <- to_process %>%
   distinct(var, zone) %>%
   mutate(path_in = here::here("M:/", "Species_2019_from_c2c_1984-2021", paste0("Species_classification_", zone, "_2019_1_leading.dat")),
          path_out = here::here(outpath, zone, var, paste0("leading-species_2019_", zone, ".dat")))
+
+age_df <- to_process %>%
+  filter(var == "age") %>%
+  distinct(var, zone) %>%
+  mutate(path_in = here::here("M:/", "Forest_Age_2019", glue::glue("UTM_{zone}"), glue::glue("Forest_Age_2019_{zone}.dat")),
+         path_out = here::here(outpath, zone, var, glue::glue("Forest_Age_2019_{zone}.dat")))
          
 
 process_df <- bind_rows(vlce_df,
@@ -83,7 +89,8 @@ process_df <- bind_rows(vlce_df,
                         structure_df,
                         latlon_df,
                         climate_df,
-                        species_df)
+                        species_df,
+                        age_df)
 
 rm(vlce_df,
    proxies_df,
@@ -94,4 +101,5 @@ rm(vlce_df,
    structure_df,
    latlon_df,
    climate_df,
-   species_df)
+   species_df,
+   age_df)

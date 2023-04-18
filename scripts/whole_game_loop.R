@@ -16,7 +16,7 @@ terraOptions(
 
 #### user inputs ####
 aoi_path <-
-  "Z:\\ByUser\\Muise/catherine_2014/extent_BAP/extent.shp"
+  "Z:\\ByUser\\Muise/francois4/extent_BAP/extent.shp"
 
 
 outpath <- dirname(aoi_path) %>%

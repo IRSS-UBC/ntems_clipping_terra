@@ -16,11 +16,11 @@ terraOptions(
 
 #### user inputs ####
 aoi_path <-
-  "Z:\\ByUser\\Muise\\francois2\\Shapefiles\\Study_Area_M_nineS.shp"
+  "Z:\\ByUser\\Muise\\francois4\\Shapefiles\\Study_Area_M_nineS.shp"
 
 listed_shps <-
   list.files(
-    "Z:/ByUser/Muise/francois3/projected",
+    "Z:/ByUser/Muise/francois4",
     full.names = T,
     pattern = ".shp$"
   )
@@ -38,7 +38,7 @@ for (aoi_path in listed_shps) {
   # what to process?
   vars <-
     tibble(
-      VLCE = F,
+      VLCE = T,
       # note - VLCE is always required when processing structure layers
       
       proxies = F,
@@ -47,7 +47,9 @@ for (aoi_path in listed_shps) {
       change_metrics = F,
       change_annual = F,
       
-      species = T,
+      species = F,
+      
+      age = F,
       
       topography = F,
       
@@ -56,16 +58,16 @@ for (aoi_path in listed_shps) {
       
       climate = F,
       
-      structure_basal_area = F,
-      structure_elev_cv = F,
-      structure_elev_mean = F,
-      structure_elev_p95 = F,
-      structure_elev_stddev = F,
-      structure_gross_stem_volume = F,
-      structure_loreys_height = F,
-      structure_percentage_first_returns_above_2m = F,
-      structure_percentage_first_returns_above_mean = F,
-      structure_total_biomass = F
+      structure_basal_area = T,
+      structure_elev_cv = T,
+      structure_elev_mean = T,
+      structure_elev_p95 = T,
+      structure_elev_stddev = T,
+      structure_gross_stem_volume = T,
+      structure_loreys_height = T,
+      structure_percentage_first_returns_above_2m = T,
+      structure_percentage_first_returns_above_mean = T,
+      structure_total_biomass = T
     ) %>%
     pivot_longer(cols = everything()) %>%
     filter(value) %>%
