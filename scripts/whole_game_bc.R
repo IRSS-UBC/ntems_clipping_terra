@@ -4,7 +4,7 @@ library("terra")
 library("sf")
 
 # temp file locations
-terra_temp <- "D:\\temp_idl3" # save in variable because used in ntems_mosaic_gdal()
+terra_temp <- "X:\\home\\yye\\ntems_clipping_terra\\terra_temp" # save in variable because used in ntems_mosaic_gdal()
 
 terraOptions(memfrac = 0.75,
              tempdir = terra_temp,
@@ -12,26 +12,30 @@ terraOptions(memfrac = 0.75,
              progress = 10)
 
 #### user inputs ####
-aoi_path <- "Z:\\ByUser\\Muise\\hana\\FTE_Extent.shp"
+aoi_path <- "X:\\home\\yye\\first_project\\elaine_study_area\\study_grid\\elaine_study_area.shp"
 
 outpath <- dirname(aoi_path) %>%
   here::here(tools::file_path_sans_ext(basename(aoi_path)))
 
 # if you want a custom outpath, comment out if you want in the same folder
-outpath <- "D:\\Bud\\bc"
+outpath <- "X:\\home\\yye\\first_project\\ntems_2019\\bc" 
 dir.create(here::here(outpath, "scratch"))
 
-years <- c(1985:2020)
-#years <- 2015
+# years <- c(2019:2020)
+years <- 2019
+is_multiple_year <- length(years) > 1
 
 # what to process?
-vars <- tibble(VLCE = F,  #note - VLCE is always required when processing structure layers
+vars <- tibble(VLCE = T,  #note - VLCE is always required when processing structure layers
                
-               proxies = T,
+               proxies = F,
                
                change_attribution = F,
                change_metrics = F,
                change_annual = F,
+               
+               age=F,
+               species=F,
                
                topography = F,
                
@@ -43,7 +47,7 @@ vars <- tibble(VLCE = F,  #note - VLCE is always required when processing struct
                structure_basal_area = F,
                structure_elev_cv = F,
                structure_elev_mean = F,
-               structure_elev_p95 = F,
+               structure_elev_p95 = T,
                structure_elev_stddev = F,
                structure_gross_stem_volume = F,
                structure_loreys_height = F,
@@ -55,14 +59,14 @@ vars <- tibble(VLCE = F,  #note - VLCE is always required when processing struct
   pull(name)
 
 # a template raster to project to. currently, if the region is >1 UTM zone, defaults to LCC
-template <- rast("D:\\Bud\\template_raster\\CA_forest_VLCE_2015.tif")
-template <- rast("Z:\\ByUser\\Muise\\bc-vlce-2015.tif")
+# template <- rast("D:\\Bud\\template_raster\\CA_forest_VLCE_2015.tif")
+template <- rast("X:\\home\\yye\\first_project\\elaine_study_area\\BC-template-file-reproj.tif")
 
 #### end user inputs ####
 
 # processing from here on, user not to adjust unless they are confident in what they are doing
-#aoi <- read_sf(aoi_path) 
-aoi <- bcmaps::bc_bound_hres()
+aoi <- read_sf(aoi_path)
+# aoi <- bcmaps::bc_bound_hres()
 
 # if single zone, out crs should be that utm zone
 out_crs <- st_crs(aoi)
@@ -71,12 +75,16 @@ source(here::here("scripts", "get_utm_masks.R")) # generates utmzone_all
 source(here::here("scripts", "get_data_type.R")) # function to make sure files save properly, shamelessly stolen from piotr
 source(here::here("scripts", "ntems_crop.R"))
 
+print("Finish loading all the scripts")
+
 utmzone_all <- utmzone_all[endsWith(utmzone_all, "S")]
 utm_masks <- utm_masks[endsWith(names(utm_masks), "S")]
 
 to_process <- crossing(year = years, zone = utmzone_all, var = vars)
 
 source(here::here("scripts", "generate_process_df.R"))
+
+print(paste0("path in: ", process_df$path_in, " and path out ", process_df$path_out))
 
 map2(process_df$path_in, process_df$path_out, ntems_crop)
 

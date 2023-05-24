@@ -39,7 +39,7 @@ load_sfs <- function(zone, year) {
 }
 
 output <- map2(.x = zones_iter, .y = years_iter, .f = load_sfs) %>%
-  map(st_transform, crs = 3005) %>%
+  map(st_transform, crs = 3978) %>%
   bind_rows() %>%
   st_intersection(bcmaps::bc_bound())
 

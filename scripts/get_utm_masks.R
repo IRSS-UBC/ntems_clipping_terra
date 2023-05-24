@@ -1,10 +1,19 @@
 source(here::here("scripts", "mosaic_masks.R"))
 
-utmzone_all <- st_intersection(aoi %>% st_transform(3347) %>% st_make_valid, nom_cad %>% st_make_valid()) %>%
-  pull(crs) %>%
-  unique() # solves multipart polygon issues
+# aoi_transformed <- aoi %>% st_transform(3978) %>% st_make_valid
+nom_cad_transformed <- nom_cad %>% st_transform(3978) %>% st_make_valid()
 
-valid_zones <- list.files("M:\\VLCE2.0_1984-2021") %>%
+# print(st_crs(aoi))
+# print(st_crs(nom_cad_transformed))
+
+intersection <- st_intersection(aoi, nom_cad_transformed)
+
+# Extract and find unique 'crs' values
+utmzone_all <- intersection %>% pull(crs) %>% unique()
+utmzone_all <- sub("_vld_ext", "", utmzone_all)
+print(paste0("utmzone_all: ", utmzone_all))
+
+valid_zones <- list.files("U:\\VLCE2.0_1984-2021") %>%
   str_split("_") %>%
   sapply("[", 2)
 

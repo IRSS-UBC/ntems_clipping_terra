@@ -1,18 +1,18 @@
 vlce_df <- to_process %>%
   filter(var == "VLCE") %>%
-  mutate(path_in = here::here("M:/", "VLCE2.0_1984-2021", paste0("UTM_", zone), paste0("LC_Class_HMM_", zone, "_", year, "_v20_v20.dat")),
+  mutate(path_in = here::here("U:/", "VLCE2.0_1984-2021", paste0("UTM_", zone), paste0("LC_Class_HMM_", zone, "_", year, "_v20_v20.dat")),
          path_out = here::here(outpath, zone, paste0(var, "2.0"), paste0("LC_Class_HMM_", zone, "_", year, "_v20_v20.dat")))
 
 attribution_df <- to_process %>%
   filter(var == "change_attribution") %>%
   distinct(var, zone) %>%
-  mutate(path_in = here::here("N:/", paste0("UTM_", zone), "Results", "Change_attribution", paste0("Attribution_UTM", zone, "_v2.dat")),
+  mutate(path_in = here::here("W:/", paste0("UTM_", zone), "Results", "Change_attribution", paste0("Attribution_UTM", zone, "_v2.dat")),
          path_out = here::here(outpath, zone, var, paste0("Attribution_UTM", zone, "_v2.dat")))
 
 metrics_df <- to_process %>%
   filter(var == "change_metrics") %>%
   distinct(var, zone) %>%
-  mutate(path_in = list(here::here("N:/", paste0("UTM_", zone), "Results", "Change_metrics") %>%
+  mutate(path_in = list(here::here("W:/", paste0("UTM_", zone), "Results", "Change_metrics") %>%
                           list.files(full.names = T, pattern = ".dat$"))) %>%
   unnest(path_in) %>%
   mutate(path_out = str_split(path_in, "/")) %>%
@@ -25,19 +25,28 @@ metrics_df <- to_process %>%
 change_annual_df <- to_process %>%
   filter(var == "change_annual") %>%
   filter(year > 1984 & year < 2021) %>%
-  mutate(path_in = here::here("N:/", paste0("UTM_", zone), "Results", "Change_attribution", "change_attributed_annually", paste0("SRef_UTM", zone, "_multiyear_attribution_", year, ".dat")),
+  mutate(path_in = here::here("W:/", paste0("UTM_", zone), "Results", "Change_attribution", "change_attributed_annually", paste0("SRef_UTM", zone, "_multiyear_attribution_", year, ".dat")),
          path_out = here::here(outpath, zone, var, paste0("SRef_UTM", zone, "_", year, "_change_annual.dat")))
-        
 
 proxies_df <- to_process %>% 
-  filter(var == "proxies") %>%
-  mutate(path_in = here::here("N:/", paste0("UTM_", zone), "Results", "proxy_values_fitted", paste0("SRef_UTM", zone, "_", year, "_fitted_proxy_v2.dat")),
-         path_out = here::here(outpath, zone, var, paste0("SRef_UTM", zone, "_", year, "_fitted_proxy_v2.dat")))
+  filter(var == "proxies") %>% 
+  mutate(
+    path_in = if (is_multiple_year) {
+      here::here("W:/", paste0("UTM_", zone), "Results", "proxy_values_fitted", paste0("SRef_UTM", zone, "_", year, "_fitted_proxy_v2.dat"))
+    } else {
+      here::here("W:/", paste0("UTM_", zone), "Results", "proxy_values", paste0("SRef_UTM", zone, "_", year, "_proxy_v2.dat"))
+    },
+    path_out = if (is_multiple_year) {
+      file.path(here::here(outpath, zone, var, paste0("SRef_UTM", zone, "_", year, "_fitted_proxy_v2.dat")))
+    } else {
+      file.path(here::here(outpath, zone, var, paste0("SRef_UTM", zone, "_", year, "_proxy_v2.dat")))
+    }
+  )
 
 structure_df <- to_process %>%
   filter(startsWith(var, "structure")) %>%
   mutate(var = gsub("structure_", "", var),
-         path_in = here::here("M:/", "annual_forest_structure_unfitted_1984-2021", paste0("UTM_", zone), var, paste0("UTM_", zone, "_", var, "_", year, ".dat")),
+         path_in = here::here("U:/", "annual_forest_structure_unfitted_1984-2021", paste0("UTM_", zone), var, paste0("UTM_", zone, "_", var, "_", year, ".dat")),
          path_out = here::here(outpath, zone, "structure", var, paste0("UTM_", zone, "_", var, "_", year, ".dat")))
 
 topo_df <- to_process %>%
@@ -70,14 +79,14 @@ climate_df <- to_process %>%
 species_df <- to_process %>%
   filter(var == "species") %>%
   distinct(var, zone) %>%
-  mutate(path_in = here::here("M:/", "Species_2019_from_c2c_1984-2021", paste0("Species_classification_", zone, "_2019_1_leading.dat")),
-         path_out = here::here(outpath, zone, var, paste0("leading-species_2019_", zone, ".dat")))
+  mutate(path_in = here::here("U:/", "Species_2019_from_c2c_1984-2021", paste0("Species_classification_", zone, "_2019_1_leading.dat")),
+         path_out = here::here(outpath, zone, var, paste0("leading-species_", zone, "_2019.dat")))
 
 age_df <- to_process %>%
   filter(var == "age") %>%
   distinct(var, zone) %>%
-  mutate(path_in = here::here("M:/", "Forest_Age_2019", glue::glue("UTM_{zone}"), glue::glue("Forest_Age_2019_{zone}.dat")),
-         path_out = here::here(outpath, zone, var, glue::glue("Forest_Age_2019_{zone}.dat")))
+  mutate(path_in = here::here("U:/", "Forest_Age_2019", glue::glue("UTM_{zone}"), glue::glue("Forest_Age_2019_{zone}.dat")),
+         path_out = here::here(outpath, zone, var, glue::glue("Forest_Age_{zone}_2019.dat")))
          
 
 process_df <- bind_rows(vlce_df,
