@@ -28,11 +28,20 @@ change_annual_df <- to_process %>%
   mutate(path_in = here::here("N:/", paste0("UTM_", zone), "Results", "Change_attribution", "change_attributed_annually", paste0("SRef_UTM", zone, "_multiyear_attribution_", year, ".dat")),
          path_out = here::here(outpath, zone, var, paste0("SRef_UTM", zone, "_", year, "_change_annual.dat")))
         
-
 proxies_df <- to_process %>% 
-  filter(var == "proxies") %>%
-  mutate(path_in = here::here("N:/", paste0("UTM_", zone), "Results", "proxy_values_fitted", paste0("SRef_UTM", zone, "_", year, "_fitted_proxy_v2.dat")),
-         path_out = here::here(outpath, zone, var, paste0("SRef_UTM", zone, "_", year, "_fitted_proxy_v2.dat")))
+  filter(var == "proxies") %>% 
+  mutate(
+    path_in = if (is_multiple_year) {
+      here::here("N:/", paste0("UTM_", zone), "Results", "proxy_values_fitted", paste0("SRef_UTM", zone, "_", year, "_fitted_proxy_v2.dat"))
+    } else {
+      here::here("N:/", paste0("UTM_", zone), "Results", "proxy_values", paste0("SRef_UTM", zone, "_", year, "_proxy_v2.dat"))
+    },
+    path_out = if (is_multiple_year) {
+      file.path(here::here(outpath, zone, var, paste0("SRef_UTM", zone, "_", year, "_fitted_proxy_v2.dat")))
+    } else {
+      file.path(here::here(outpath, zone, var, paste0("SRef_UTM", zone, "_", year, "_proxy_v2.dat")))
+    }
+  )
 
 structure_df <- to_process %>%
   filter(startsWith(var, "structure")) %>%
