@@ -23,6 +23,7 @@ dir.create(here::here(outpath, "scratch"))
 
 years <- c(1985:2020)
 #years <- 2015
+is_multiple_year <- length(years) > 1
 
 # what to process?
 vars <- tibble(VLCE = F,  #note - VLCE is always required when processing structure layers
@@ -77,6 +78,8 @@ utm_masks <- utm_masks[endsWith(names(utm_masks), "S")]
 to_process <- crossing(year = years, zone = utmzone_all, var = vars)
 
 source(here::here("scripts", "generate_process_df.R"))
+
+print(paste0("path in: ", process_df$path_in, " and path out ", process_df$path_out))
 
 map2(process_df$path_in, process_df$path_out, ntems_crop)
 
