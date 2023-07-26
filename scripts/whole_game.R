@@ -47,7 +47,7 @@ vars <-
     
     climate = F,
     
-    age = F
+    age = F,
     
     structure_basal_area = F,
     structure_elev_cv = F,
