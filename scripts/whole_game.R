@@ -15,7 +15,7 @@ terraOptions(
 )
 
 #### user inputs ####
-aoi_path <- "Z:\\ByUser\\Muise/catherine_2014/extent_BAP/extent.shp"
+aoi_path <- "Z:\\ByUser\\Seely_H/from_bud/NB_boundary.shp"
 
 outpath <- dirname(aoi_path) %>%
   here::here(tools::file_path_sans_ext(basename(aoi_path)))
@@ -23,13 +23,13 @@ outpath <- dirname(aoi_path) %>%
 # if you want a custom outpath, comment out if you want in the same folder
 #outpath <- "D:\\Bud\\bc\\"
 
-years <- c(1984:2021)
-years <- 2014
+years <- c(2015:2018)
+# years <- 2014
 
 # what to process?
 vars <-
   tibble(
-    VLCE = T,
+    VLCE = F,
     # note - VLCE is always required when processing structure layers
     
     proxies = F,
@@ -47,16 +47,18 @@ vars <-
     
     climate = F,
     
-    structure_basal_area = T,
-    structure_elev_cv = T,
-    structure_elev_mean = T,
-    structure_elev_p95 = T,
-    structure_elev_stddev = T,
-    structure_gross_stem_volume = T,
-    structure_loreys_height = T,
-    structure_percentage_first_returns_above_2m = T,
-    structure_percentage_first_returns_above_mean = T,
-    structure_total_biomass = T
+    age = F
+    
+    structure_basal_area = F,
+    structure_elev_cv = F,
+    structure_elev_mean = F,
+    structure_elev_p95 = F,
+    structure_elev_stddev = F,
+    structure_gross_stem_volume = F,
+    structure_loreys_height = F,
+    structure_percentage_first_returns_above_2m = F,
+    structure_percentage_first_returns_above_mean = F,
+    structure_total_biomass = F
   ) %>%
   pivot_longer(cols = everything()) %>%
   filter(value) %>%
