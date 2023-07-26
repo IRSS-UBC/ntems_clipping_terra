@@ -26,13 +26,15 @@ outpath <- dirname(aoi_path) %>%
 years <- c(2015:2018)
 # years <- 2014
 
+is_multiple_year <- length(years) > 1
+
 # what to process?
 vars <-
   tibble(
     VLCE = F,
     # note - VLCE is always required when processing structure layers
     
-    proxies = F,
+    proxies = T,
     
     change_attribution = F,
     change_metrics = F,
@@ -67,7 +69,7 @@ vars <-
 # a template raster to project to. currently, if the region is >1 UTM zone, defaults to LCC
 template <-
   rast("D:\\Bud\\template_raster\\CA_forest_VLCE_2015.tif")
-template <- rast("Z:\\ByUser\\Muise\\bc-vlce-2015.tif")
+# template <- rast("Z:\\ByUser\\Muise\\bc-vlce-2015.tif")
 
 #### end user inputs ####
 
