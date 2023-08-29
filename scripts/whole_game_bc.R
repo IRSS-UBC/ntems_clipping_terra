@@ -12,7 +12,7 @@ terraOptions(memfrac = 0.75,
              progress = 10)
 
 #### user inputs ####
-aoi_path <- "Z:\\ByUser\\Muise\\hana\\FTE_Extent.shp"
+aoi_path <- "D:\\Bud\\bc\\bcb.shp"
 
 outpath <- dirname(aoi_path) %>%
   here::here(tools::file_path_sans_ext(basename(aoi_path)))
@@ -28,13 +28,13 @@ is_multiple_year <- length(years) > 1
 # what to process?
 vars <- tibble(VLCE = F,  #note - VLCE is always required when processing structure layers
                
-               proxies = T,
+               proxies = F,
                
                change_attribution = F,
                change_metrics = F,
                change_annual = F,
                
-               topography = F,
+               topography = T,
                
                lat = F,
                lon = F,
@@ -79,7 +79,7 @@ to_process <- crossing(year = years, zone = utmzone_all, var = vars)
 
 source(here::here("scripts", "generate_process_df.R"))
 
-print(paste0("path in: ", process_df$path_in, " and path out ", process_df$path_out))
+#print(paste0("path in: ", process_df$path_in, " and path out ", process_df$path_out))
 
 map2(process_df$path_in, process_df$path_out, ntems_crop)
 

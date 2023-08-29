@@ -14,7 +14,7 @@ shp_files <- shp_files[endsWith(shp_files, ".shp")] %>%
   here::here(shp_path, .)
 
 # get only shapefiles to iterate over
-if (!file.exists("C:/Users/evanmuis/Desktop/ntems_cliping_terra/shapefiles/non_overlapping_masks_canada.shp")) {
+if (!file.exists(here::here("shapefiles", "non_overlapping_masks_canada.shp"))) {
 
   read_add_crs <- function(shp_path) {
     # pulls the ntems zone form name and appends it so when the intersection 

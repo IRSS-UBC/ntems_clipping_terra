@@ -4,7 +4,7 @@ utmzone_all <- st_intersection(aoi %>% st_transform(3347) %>% st_make_valid, nom
   pull(crs) %>%
   unique() # solves multipart polygon issues
 
-valid_zones <- list.files("M:\\VLCE2.0_1984-2021") %>%
+valid_zones <- list.files("E:\\VLCE2.0\\VLCE_HMM_1984-2022") %>%
   str_split("_") %>%
   sapply("[", 2)
 

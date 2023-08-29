@@ -15,15 +15,15 @@ terraOptions(
 )
 
 #### user inputs ####
-aoi_path <- "Z:\\ByUser\\Seely_H/from_bud/NB_boundary.shp"
+aoi_path <- "Z:\\ByProject\\Silv21\\Shapefiles\\Quesnel.shp"
 
 outpath <- dirname(aoi_path) %>%
   here::here(tools::file_path_sans_ext(basename(aoi_path)))
 
 # if you want a custom outpath, comment out if you want in the same folder
-#outpath <- "D:\\Bud\\bc\\"
+outpath <- "Z:\\ByProject\\Silv21\\Quesnel\\NTEMS"
 
-years <- c(2015:2018)
+years <- c(2000:2021)
 # years <- 2014
 
 is_multiple_year <- length(years) > 1
@@ -31,10 +31,10 @@ is_multiple_year <- length(years) > 1
 # what to process?
 vars <-
   tibble(
-    VLCE = F,
+    VLCE = T,
     # note - VLCE is always required when processing structure layers
     
-    proxies = T,
+    proxies = F,
     
     change_attribution = F,
     change_metrics = F,
