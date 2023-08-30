@@ -51,13 +51,23 @@ ntems_crop <- function(path_in, path_out) {
            updatevalue = 151)
   }
   
-  writeRaster(
-    save_rast,
-    filename = path_out,
-    datatype = get_data_type(path_in),
-    filetype = "ENVI",
-    overwrite = T
-  )
+  if (endsWith(path_in, ".dat")) {
+    writeRaster(
+      save_rast,
+      filename = path_out,
+      datatype = get_data_type(path_in),
+      filetype = "ENVI",
+      overwrite = T
+    )
+  } else {
+    writeRaster(
+      save_rast,
+      filename = path_out,
+      #datatype = get_data_type(path_in),
+      filetype = "ENVI",
+      overwrite = T
+    )
+  }
   print(Sys.time() - crop_start)
   
 }
