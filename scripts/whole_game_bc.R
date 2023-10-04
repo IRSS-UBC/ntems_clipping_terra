@@ -79,6 +79,10 @@ to_process <- crossing(year = years, zone = utmzone_all, var = vars)
 
 source(here::here("scripts", "generate_process_df.R"))
 
+
+process_df <- process_df %>% filter(stringr::str_detect(path_in, "slope") |
+                                      str_detect(path_in, "DEM"))
+
 #print(paste0("path in: ", process_df$path_in, " and path out ", process_df$path_out))
 
 map2(process_df$path_in, process_df$path_out, ntems_crop)

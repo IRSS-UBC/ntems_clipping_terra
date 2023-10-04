@@ -15,16 +15,16 @@ terraOptions(
 )
 
 #### user inputs ####
-aoi_path <- "Z:\\ByProject\\Silv21\\Shapefiles\\Quesnel.shp"
+aoi_path <- "Z:\\ByUser\\Muise\\katie\\aoi_cams_wgs.shp"
 
 outpath <- dirname(aoi_path) %>%
   here::here(tools::file_path_sans_ext(basename(aoi_path)))
 
 # if you want a custom outpath, comment out if you want in the same folder
-outpath <- "Z:\\ByProject\\Silv21\\Quesnel\\NTEMS"
+# outpath <- "Z:\\ByProject\\Silv21\\Quesnel\\NTEMS"
 
 years <- c(2000:2021)
-# years <- 2014
+ years <- c(2015, 2022)
 
 is_multiple_year <- length(years) > 1
 
@@ -58,7 +58,7 @@ vars <-
     structure_elev_stddev = F,
     structure_gross_stem_volume = F,
     structure_loreys_height = F,
-    structure_percentage_first_returns_above_2m = F,
+    structure_percentage_first_returns_above_2m = T,
     structure_percentage_first_returns_above_mean = F,
     structure_total_biomass = F
   ) %>%
@@ -88,6 +88,7 @@ source(here::here("scripts", "ntems_crop.R"))
 to_process <- crossing(year = years, zone = utmzone_all, var = vars)
 
 source(here::here("scripts", "generate_process_df.R"))
+
 
 map2(process_df$path_in, process_df$path_out, ntems_crop)
 

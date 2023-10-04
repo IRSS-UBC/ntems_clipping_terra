@@ -49,7 +49,7 @@ ntems_mosaicer <- function(tibble) {
   proj_rasts <- rast_paths %>%
     map(rast) %>%
     map(.f = project, y = template,
-         align = T, method = "near")
+         align = T, method = "near", gdal = T, by_util = T, threads = T)
   
   print("Masking")
   
