@@ -70,8 +70,10 @@ ntems_mosaicer <- function(tibble) {
     # implement a direct header modification here
     print("Adding levels and colours")
     
-    levels(mosaiced) <- levels(rast(ref))
-    coltab(mosaiced) <- coltab(rast(ref))
+    rastref <- rast(ref)
+    
+    levels(mosaiced) <- levels(rastref)
+    coltab(mosaiced) <- coltab(rastref)[[1]]
   } 
   
   print("Saving")
