@@ -6,7 +6,7 @@ vlce_df <- to_process %>%
 attribution_df <- to_process %>%
   filter(var == "change_attribution") %>%
   distinct(var, zone) %>%
-  mutate(path_in = here::here("L:/", "C2C_1984_2022", paste0("UTM_", zone), "Results", "Change_attribution", paste0("Attribution_UTM", zone, "_v2.dat")),
+  mutate(path_in = here::here("L:/", "C2C_1984_2022", paste0("UTM_", zone), "Results", "Change_attribution", paste0("Attribution_UTM", zone, "_v2_post.dat")),
          path_out = here::here(outpath, zone, var, paste0("Attribution_UTM", zone, "_v2.dat")))
 
 metrics_df <- to_process %>%
@@ -87,7 +87,7 @@ age_df <- to_process %>%
   distinct(var, zone) %>%
   mutate(path_in = here::here("E:/", "Age", "Age_2019_from_c2c1984-2021", "age", glue::glue("UTM{zone}_Forest_Age_2019.dat")),
          path_out = here::here(outpath, zone, var, glue::glue("Forest_Age_2019_{zone}.dat")))
-         
+
 
 process_df <- bind_rows(vlce_df,
                         proxies_df,
