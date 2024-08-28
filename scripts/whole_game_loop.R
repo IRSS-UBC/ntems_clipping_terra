@@ -16,7 +16,7 @@ terraOptions(
 
 #### user inputs ####
 aoi_path <-
-  "Z:\\ByUser\\Muise/francois4/extent_BAP/extent.shp"
+  "Z:/ByUser/Muise/angelina/ParkBoundariesABBC.shp"
 
 
 outpath <- dirname(aoi_path) %>%
@@ -26,7 +26,7 @@ outpath <- dirname(aoi_path) %>%
 # outpath <- "D:\\Bud\\bap_alex"
 
 years <- c(1984:2019)
-years <- 2014
+years <- 2022
 
 # what to process?
 vars <-
@@ -47,15 +47,15 @@ vars <-
     
     climate = F,
     
-    structure_basal_area = T,
-    structure_elev_cv = T,
-    structure_elev_mean = T,
+    structure_basal_area = F,
+    structure_elev_cv = F,
+    structure_elev_mean = F,
     structure_elev_p95 = T,
-    structure_elev_stddev = T,
-    structure_gross_stem_volume = T,
-    structure_loreys_height = T,
+    structure_elev_stddev = F,
+    structure_gross_stem_volume = F,
+    structure_loreys_height = F,
     structure_percentage_first_returns_above_2m = T,
-    structure_percentage_first_returns_above_mean = T,
+    structure_percentage_first_returns_above_mean = F,
     structure_total_biomass = T
   ) %>%
   pivot_longer(cols = everything()) %>%
@@ -65,7 +65,7 @@ vars <-
 # a template raster to project to. currently, if the region is >1 UTM zone, defaults to LCC
 template <-
   rast("D:\\Bud\\template_raster\\CA_forest_VLCE_2015.tif")
-template <- rast("Z:\\ByUser\\Muise\\bc-vlce-2015.tif")
+# template <- rast("Z:\\ByUser\\Muise\\bc-vlce-2015.tif")
 
 #### end user inputs ####
 
@@ -74,8 +74,8 @@ aoi <- read_sf(aoi_path)
 
 split_polys <- aoi %>%
   janitor::clean_names() %>%
-  group_by(prot_name) %>%
-  group_split(prot_name)
+  group_by(name_e) %>%
+  group_split()
 
 save_loc <- here::here(dirname(aoi_path), "split_shps")
 dir.create(save_loc)
@@ -90,7 +90,7 @@ save_named <- function(df, colname) {
   return(save_path)
 }
 
-input_list <- map(split_polys, save_named, colname = "prot_name")
+input_list <- map(split_polys, save_named, colname = "name_e")
 
 for (aoi_path in input_list) {
   print(aoi_path)
@@ -153,14 +153,14 @@ colour_match <- function(rast, in_name) {
   }
   ref <- rast(in_name)
   levels(rast) <- levels(ref)
-  coltab(rast) <- coltab(ref)
+  coltab(rast) <- coltab(ref)[[1]]
   rast
 }
 
 # align all split polygon rasters to the same template raster
 
 for (rasts_path in list.dirs(save_loc, recursive = F)) {
-  print(rasts_path)
+  print(rasts_path) 
   
   in_names <- list.files(
     rasts_path,
@@ -190,20 +190,23 @@ for (rasts_path in list.dirs(save_loc, recursive = F)) {
     map(dir.create, recursive = T, showWarnings = F)
   
   projected <- in_names %>%
-    map(.f = rast) %>%
+    map(.f = rast, .progress = "rast") %>%
     map(project,
         y = template,
         method = "near",
-        align = T) %>%
+        align = T,
+        gdal = T, 
+        by_util = T, 
+        threads = T, .progress = "project") %>%
     map2(.x = .,
          .y = in_names,
-         .f = colour_match) %>%
+         .f = colour_match, .progress = "colour match") %>%
     map2(
       .x = .,
       .y = out_names,
       .f = writeRaster,
       filetype = "envi",
-      overwrite = T
+      overwrite = T, .progress = "save"
     )
   print("saved")
 }

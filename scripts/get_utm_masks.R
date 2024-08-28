@@ -10,9 +10,6 @@ valid_zones <- list.files("E:\\VLCE2.0\\VLCE_HMM_1984-2022") %>%
 
 utmzone_all <- utmzone_all[utmzone_all %in% valid_zones]
   
-print(paste0("AOI is located in ", length(utmzone_all), " UTM zones: "))
-print(utmzone_all)
-print("Note that letters N or S correspond to the internal NTEMS data division, not northern or southern hemishphere")
 
 if(length(utmzone_all > 1)) {
   out_crs = crs(rast(template))

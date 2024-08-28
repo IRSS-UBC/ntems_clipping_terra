@@ -16,7 +16,7 @@ terraOptions(
 
 #### user inputs ####
 aoi_path <-
-  "Z:\\ByUser\\Muise\\francois4\\Shapefiles\\Study_Area_M_nineS.shp"
+  "Z:/ByUser/Muise/angelina/ParkBoundariesABBC.shp"
 
 listed_shps <-
   list.files(

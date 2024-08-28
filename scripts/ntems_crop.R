@@ -1,7 +1,14 @@
 # crops ntems layers based on in and out paths
 # can be used with map2 to functionally program
 
-ntems_crop <- function(path_in, path_out) {
+ntems_crop <- function(path_in, path_out, overwrite = F) {
+  
+  if(!overwrite & file.exists(path_out)) {
+    print("Don't overwrite, and file already exists")
+    return()
+  }
+  
+  
   crop_start <- Sys.time()
   print(paste("Processing input file of:", path_in))
   
@@ -16,7 +23,12 @@ ntems_crop <- function(path_in, path_out) {
   # ext()
   
   save_rast <- crop(my_rast, my_aoi) %>%
-    mask(my_aoi)
+    mask(my_aoi) %>% trim()
+  
+  if(str_detect(path_in, "VLCE")) {
+    save_rast <- save_rast %>% 
+      subst("Unclassified", NA)
+  }
   
   if (str_detect(path_in, "structure")) {
     print("structure raster, masking based on the VLCE raster")
