@@ -81,5 +81,5 @@ ntems_crop <- function(path_in, path_out, overwrite = F) {
     )
   }
   print(Sys.time() - crop_start)
-  
+  terra::tmpFiles(remove = T)
 }

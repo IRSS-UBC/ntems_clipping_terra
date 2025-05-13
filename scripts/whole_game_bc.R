@@ -40,6 +40,7 @@ vars <-
     change_attribution = F,
     change_metrics = F,
     change_annual = F,
+    gcy = T,
     
     species = F,
     
@@ -52,7 +53,7 @@ vars <-
     
     age = F,
     
-    structure_basal_area = F,
+    structure_basal_area = T,
     structure_elev_cv = F,
     structure_elev_mean = F,
     structure_elev_p95 = F,
@@ -61,7 +62,7 @@ vars <-
     structure_loreys_height = F,
     structure_percentage_first_returns_above_2m = F,
     structure_percentage_first_returns_above_mean = F,
-    structure_total_biomass = T
+    structure_total_biomass = F
   ) %>%
   pivot_longer(cols = everything()) %>%
   filter(value) %>%
@@ -69,7 +70,7 @@ vars <-
 
 # a template raster to project to. currently, if the region is >1 UTM zone, defaults to LCC
 #template <- rast("D:\\Bud\\template_raster\\CA_forest_VLCE_2015.tif")
-template <- rast("Z:/ByUser/Muise/forests.dat")
+template <- rast("//FRST-FRM-2234K/inputs/forests.dat")
 
 #### end user inputs ####
 

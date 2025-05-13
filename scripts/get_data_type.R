@@ -4,7 +4,7 @@ get_data_type <- function(path) {
   
   path_hdr <- gsub(x = path, pattern = ".dat", replacement = ".hdr")
   
-  data_type_envi = read_lines(path_hdr)[9:10] %>%
+  data_type_envi = read_lines(path_hdr) %>%
     str_subset("data type") %>%
     str_split(" = ") %>%
     .[[1]] %>%

@@ -43,33 +43,69 @@ ntems_mosaicer <- function(tibble, overwrite = F) {
   #print(paste("mosaicing at: ", save_path))
   print("----------------------------")
   
+  interim_savelocs <- here::here("G:/scratch", aoi_path %>%
+                                   basename() %>%
+                                   tools::file_path_sans_ext(), 
+                                 glue::glue("{var}_{year}_{1:length(utm_masks)}.tif"))
   
+  dir.create(dirname(interim_savelocs[[1]]))
   
-  print("Projecting rasters and vector masks")
+  if (!all(file.exists(interim_savelocs))) {
+    print("Projecting rasters and vector masks")
+    
+    utm_masks_proj <- utm_masks %>%
+      map(project, y = template)
+    
+    rast_paths <- tibble %>%
+      pull(path_out)
+    
+    proj_rasts <- rast_paths %>%
+      map(rast) %>%
+      map(
+        .f = project,
+        y = template,
+        align = T,
+        method = "near",
+        gdal = T,
+        by_util = T,
+        threads = T,
+        .progress = "Projection"
+      )
+    
+    print("Masking")
+    
+    masked_data <- proj_rasts %>%
+      map2(
+        .x = .,
+        .y = utm_masks_proj,
+        .f = mask,
+        todisk = T,
+        .progress = "Masking"
+      )
+    
+    saved_masked <- map2_chr(masked_data, interim_savelocs, \(x, saveloc) {
+      if (file.exists(saveloc)) {
+        return(saveloc)
+      }
+      writeRaster(x, saveloc)
+      return(saveloc)
+    }, .progress = T)
+  }
   
-  utm_masks_proj <- utm_masks %>%
-    map(project, y = template)
-  
-  rast_paths <- tibble %>%
-    pull(path_out)
-
-  proj_rasts <- rast_paths %>%
-    map(rast) %>%
-    map(.f = project, y = template,
-         align = T, method = "near", gdal = T, by_util = T, threads = T, .progress = "Projection")
-  
-  print("Masking")
-  
-  masked_data <- proj_rasts %>%
-    map2(.x = ., .y = utm_masks_proj, .f = mask,
-         todisk = T, .progress = "Masking")
+  saved_masked <- interim_savelocs
   
   print("Mosaicing")
+  # 
+  # mosaiced <- masked_data %>%
+  #   sprc() %>%
+  #   mosaic(fun = "mean") %>%
+  #   crop(aoi, mask = T, touches = T)
   
-  mosaiced <- masked_data %>%
-    sprc() %>%
-    mosaic(fun = "max") %>%
-    crop(aoi, mask = T, touches = T)
+  mosaiced <- vrt(interim_savelocs) 
+  
+  mosaiced <- mosaiced %>%
+    mask(aoi %>%
+           vect())
 
   print("Mosaiced")
     
@@ -91,11 +127,12 @@ ntems_mosaicer <- function(tibble, overwrite = F) {
               filetype = "ENVI",
               overwrite = T,
               todisk = T,
-              memfrac = 0.90)
+              memfrac = 0.90, progress = T)
   
   print("----------------------------")
 
   terra::tmpFiles(remove = T)
+  #file.remove(saved_masked)
   
   print(Sys.time() - mosaic_start)
 }

@@ -1,6 +1,7 @@
 start_time <- Sys.time()
 library("tidyverse")
 library("terra")
+library(tidyterra)
 library("sf")
 
 # temp file locations
@@ -8,25 +9,25 @@ terra_temp <-
   "G:\\Temp" # save in variable because used in ntems_mosaic_gdal()
 dir.create(terra_temp, showWarnings = F)
 terraOptions(
-  memfrac = 0.75,
+  memfrac = 0.9,
   tempdir = terra_temp,
   todisk = FALSE,
   progress = 100
 )
 
 #### user inputs ####
-aoi_path <- glue::glue("Z:/ByUser/Brown/from_bud/site.shp")
+aoi_path <- glue::glue("//frst-irsstor2/ByUser/Muise/0_eliceo/PNW_study_area.shp")
 
 outpath <- dirname(aoi_path) %>%
   here::here(tools::file_path_sans_ext(basename(aoi_path)))
 
 # if you want a custom outpath, comment out if you want in the same folder
-# outpath <- "D:/hayy/"
+#outpath <- "//frst-irsstor2/ByUser/Muise/0_jp"
 
-years <- c(2020:2022)
+years <- c(1984:2024) %>% rev()
 
 is_multiple_year <- length(years) > 1
-#is_multiple_year <- F
+is_multiple_year <- F
 
 # what to process?
 vars <-
@@ -39,6 +40,7 @@ vars <-
     change_attribution = F,
     change_metrics = F,
     change_annual = F,
+    gcy = F,
     
     species = F,
     
@@ -51,32 +53,38 @@ vars <-
     
     age = F,
     
-    structure_basal_area = F,
-    structure_elev_cv = F,
-    structure_elev_mean = F,
-    structure_elev_p95 = F,
-    structure_elev_stddev = F,
-    structure_gross_stem_volume = F,
-    structure_loreys_height = F,
-    structure_percentage_first_returns_above_2m = F,
-    structure_percentage_first_returns_above_mean = F,
-    structure_total_biomass = F
+    fao = F,
+    
+    structure_basal_area = T,
+    structure_elev_cv = T,
+    structure_elev_mean = T,
+    structure_elev_p95 = T,
+    structure_elev_stddev = T,
+    structure_gross_stem_volume = T,
+    structure_loreys_height = T,
+    structure_percentage_first_returns_above_2m = T,
+    structure_percentage_first_returns_above_mean = T,
+    structure_total_biomass = T
   ) %>%
   pivot_longer(cols = everything()) %>%
   filter(value) %>%
   pull(name)
 
 # a template raster to project to. currently, if the region is >1 UTM zone, defaults to LCC
-template <-
-  rast("G:/Muise_Mosaics/vlce/Mosaic_vlce_hmm_2016_NN.dat")
+# template <- rast("//FRST-FRM-2234K/inputs/forests.dat")
+# template <-
+#   rast("G:/Muise_Mosaics/vlce/Mosaic_vlce_hmm_2016_NN.dat")
 #template <- rast(glue::glue("Z:/ByUser/Muise/francois5/{egg}/mosaiced/age/Forest_Age_2019.dat"))
-#template <- rast("Z:/ByUser/Muise/forests.dat")
+template <- rast("//frst-irsstor2/ByUser/Muise/forests.dat")
 #template <- rast("Z:/ByUser/Muise/HARRY/harry_example_img.tif")
 
 #### end user inputs ####
 
 # processing from here on, user not to adjust unless they are confident in what they are doing
 aoi <- read_sf(aoi_path)
+# aoi <- bcmaps::bc_bound_hres()
+aoi <- aoi %>%
+  filter(PRENAME %in% c("British Columbia", "Alberta"))
 
 # if single zone, out crs should be that utm zone
 out_crs <- st_crs(aoi)
@@ -84,6 +92,10 @@ out_crs <- st_crs(aoi)
 source(here::here("scripts", "get_utm_masks.R")) # generates utmzone_all
 source(here::here("scripts", "get_data_type.R")) # function to make sure files save properly, shamelessly stolen from piotr
 source(here::here("scripts", "ntems_crop.R"))
+
+# # forces it to just do south zones; useful for BC mosaicing
+utmzone_all <- utmzone_all[endsWith(utmzone_all, "S")]
+utm_masks <- utm_masks[endsWith(names(utm_masks), "S")]
 
 print(paste0("AOI is located in ", length(utmzone_all), " UTM zones: "))
 print(utmzone_all)
@@ -121,7 +133,8 @@ if (length(utm_masks) >= 2) {
       mosaic_path = str_replace(mosaic_path, "_\\d{1,2}[NS]", "")
       # regex that checks for an underscore, 1-2 numbers, a letter, and and removes it
     ) %>%
-    group_split(mosaic_path)
+    group_split(mosaic_path) %>%
+    rev()
   
   source(here::here("scripts", "ntems_mosaic.R"))
   #source(here::here("scripts", "scripts/ntems_mosaic_gdal.R"))
